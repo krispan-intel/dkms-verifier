@@ -1,0 +1,6 @@
+ietf_dscp_to_ieee8021q_tt
+ieee8021q_tt_to_tc
+xpcs_create_pcs_mdiodev
+sized_strscpy
+irq_domain_instantiate
+timer_init_key

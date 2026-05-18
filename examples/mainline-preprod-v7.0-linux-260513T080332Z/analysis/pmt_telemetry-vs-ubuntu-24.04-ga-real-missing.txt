@@ -1,0 +1,3 @@
+intel_vsec_get_mapping
+pmt_telem_read_mmio
+intel_pmt_get_features

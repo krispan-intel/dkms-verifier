@@ -1,0 +1,4 @@
+__trace_set_current_state
+ipmi_panic_request_and_wait
+sized_strscpy
+__tracepoint_sched_set_state_tp

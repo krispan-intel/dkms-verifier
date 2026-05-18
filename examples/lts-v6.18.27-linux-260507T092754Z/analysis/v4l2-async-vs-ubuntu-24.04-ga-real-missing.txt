@@ -1,0 +1,2 @@
+__v4l2_device_register_subdev
+debugfs_create_file_full

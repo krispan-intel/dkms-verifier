@@ -1,0 +1,13 @@
+__register_virtio_driver
+drm_fbdev_shmem_driver_fbdev_probe
+__dma_sync_sg_for_device
+drm_gem_shmem_unpin_locked
+drm_gem_shmem_pin_locked
+validate_usercopy_range
+__vma_start_write
+drm_client_setup
+cpu_number
+sized_strscpy
+drm_gem_shmem_vunmap_locked
+drm_gem_shmem_vmap_locked
+__kmem_cache_create_args

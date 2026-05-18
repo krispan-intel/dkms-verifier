@@ -1,0 +1,1 @@
+is_clock_scaling_supported_by_slave

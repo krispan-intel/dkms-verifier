@@ -1,0 +1,10 @@
+tag=mainline-preprod-v7.0-linux-260513T080332Z
+base=v7.0
+head_rev=mainline-preprod-v7.0-linux-260513T080332Z
+head=bf30551176b188c664ada7a3ca9bd9c10194b981
+kernel_src=<KERNEL_SRC>
+kmods=/lib/modules/6.17.0-23-generic/kernel
+generated_at=2026-05-18T13:38:15+08:00
+n_modules=16
+n_modules_checked=16
+targets=ubuntu-24.04-ga ubuntu-24.04-hwe

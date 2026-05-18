@@ -1,0 +1,6 @@
+hrtimer_setup
+ktime_real_to_base_clock
+timekeeping_clocksource_has_base
+pps_gen_unregister_source
+pps_gen_register_source
+pps_gen_event

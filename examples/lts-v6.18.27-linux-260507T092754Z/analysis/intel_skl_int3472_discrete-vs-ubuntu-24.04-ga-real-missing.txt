@@ -1,0 +1,3 @@
+skl_int3472_fill_cldb
+skl_int3472_get_acpi_buffer
+skl_int3472_get_sensor_adev_and_name

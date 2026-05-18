@@ -1,0 +1,16 @@
+esp4
+esp6
+intel-lpss-pci
+intel_pmc_core
+intel_pmc_ssram_telemetry
+mei
+mei-gsc
+mei-txe
+mei-vsc
+mipi-i3c-hci-pci
+pmt_class
+pmt_crashlog
+pmt_discovery
+pmt_telemetry
+ufshcd-pci
+xe

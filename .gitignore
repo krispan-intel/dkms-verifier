@@ -1,0 +1,15 @@
+# Per-run output (regenerable; only examples/ is checked in)
+/releases/
+
+# Cached Ubuntu KMI baselines (large, regenerable via `make refresh-targets`)
+/targets/
+
+# Local test fixtures and one-off cached debs
+/test/
+/oot/
+
+# Editor / OS / Claude Code session metadata
+*.swp
+*.swo
+.DS_Store
+.claude/

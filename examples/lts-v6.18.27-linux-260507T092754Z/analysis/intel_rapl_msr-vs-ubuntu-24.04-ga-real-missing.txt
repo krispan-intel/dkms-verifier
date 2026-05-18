@@ -1,0 +1,4 @@
+rdmsrq_safe_on_cpu
+rapl_add_package_cpuslocked
+rapl_find_package_domain_cpuslocked
+rapl_remove_package_cpuslocked

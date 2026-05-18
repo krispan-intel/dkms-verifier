@@ -1,0 +1,1176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>OOT DKMS feasibility — lts-v6.18.27-linux-260507T092754Z</title>
+<style>
+  body  { font: 14px/1.55 system-ui, sans-serif; max-width: 1180px; margin: 2rem auto; padding: 0 1rem; color: #222; }
+  h1, h2, h3 { color: #1a1a1a; }
+  h1 { border-bottom: 2px solid #2c5aa0; padding-bottom: .3rem; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #ddd; padding: .4rem .6rem; text-align: left; vertical-align: top; }
+  th { background: #f4f6f8; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .pill { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 12px; font-weight: 600; }
+  .pass { background: #d4edda; color: #155724; }
+  .warn { background: #fff3cd; color: #856404; }
+  .fail { background: #f8d7da; color: #721c24; }
+  .nope { background: #d1ecf1; color: #0c5460; }
+  code { background: #f4f4f4; padding: 1px 4px; border-radius: 3px; font-size: 13px; }
+  details { margin: .3rem 0; }
+  summary { cursor: pointer; }
+  .small  { font-size: 13px; color: #555; }
+  .barbox { display: inline-block; width: 200px; background: #eee; border-radius: 3px; overflow: hidden; vertical-align: middle; height: 12px; }
+  .bar    { display: inline-block; height: 12px; background: #d9534f; vertical-align: top; }
+  .bar.ok { background: #5cb85c; }
+  ul.syms { columns: 2; column-gap: 1.5rem; font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+  ul.syms li { break-inside: avoid; }
+  .tldr { background: #f7faff; border: 1px solid #c7d8f0; border-radius: 6px; padding: .8rem 1rem; margin: 1rem 0; }
+  .tldr h2 { margin-top: 0; }
+  .tldr-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+  .tldr-card { background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: .6rem .8rem; }
+  .tldr-card h3 { margin: 0 0 .3rem 0; font-size: 14px; }
+  .tldr-card .big { font-size: 22px; font-weight: 600; color: #1a1a1a; }
+</style>
+</head>
+<body>
+
+<h1>OOT DKMS feasibility — <code>lts-v6.18.27-linux-260507T092754Z</code></h1>
+<p class="small">
+  base: v6.18.27 |middot;   head: 722b023c516c8bfbfe652bb6d118f38eda6a2cf2 |middot;   generated_at: 2026-05-18T13:48:31+08:00 |middot;   n_modules: 34 |middot;   n_modules_checked: 34 |middot; </p>
+
+<div class="tldr">
+<h2>TL;DR — 34 modules touched by this release</h2>
+<div class="tldr-grid">
+  <div class="tldr-card">
+    <h3>Ubuntu 24.04 GA (kernel 6.8) <span class="small">(<code>6.8.0-31-generic</code>)</span></h3>
+    <p>
+      <span class="big">10</span> <span class="pill pass">DKMS OK</span> &nbsp;
+      <span class="big">15</span> <span class="pill warn">with shims</span> &nbsp;
+      <span class="big">9</span> <span class="pill fail">high risk</span>
+    </p>
+  </div>
+  <div class="tldr-card">
+    <h3>Ubuntu 24.04 HWE (kernel 6.17) <span class="small">(<code>6.17.0-23-generic</code>)</span></h3>
+    <p>
+      <span class="big">34</span> <span class="pill pass">DKMS OK</span> &nbsp;
+      <span class="big">0</span> <span class="pill warn">with shims</span> &nbsp;
+      <span class="big">0</span> <span class="pill fail">high risk</span>
+    </p>
+  </div>
+</div>
+</div>
+
+<h2>Per-module verdicts</h2>
+<table>
+<tr>
+  <th>Module</th>
+  <th>Ubuntu 24.04 GA (kernel 6.8)<br><span class="small">CRC / real-missing</span></th>
+  <th>Ubuntu 24.04 HWE (kernel 6.17)<br><span class="small">CRC / real-missing</span></th>
+  <th>DKMS @ 6.8.0-31-generic</th>
+  <th>DKMS @ 6.17.0-23-generic</th>
+</tr>
+<tr>
+  <td><a href="#mod-dp83867"><code>dp83867</code></a></td>
+  <td>
+    CRC <span class="pill warn">21</span>
+    real-missing <span class="pill fail">1</span> / 22
+    <div><span class="barbox"><span class="bar" style="width:4%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 22
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill warn">DKMS with shims</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-dwmac-intel"><code>dwmac-intel</code></a></td>
+  <td>
+    CRC <span class="pill warn">58</span>
+    real-missing <span class="pill fail">1</span> / 60
+    <div><span class="barbox"><span class="bar" style="width:1%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 60
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill warn">DKMS with shims</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-hpwdt"><code>hpwdt</code></a></td>
+  <td>
+    CRC <span class="pill warn">29</span>
+    real-missing <span class="pill fail">0</span> / 29
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 29
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill pass">DKMS OK</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-igc"><code>igc</code></a></td>
+  <td>
+    CRC <span class="pill warn">223</span>
+    real-missing <span class="pill fail">19</span> / 250
+    <div><span class="barbox"><span class="bar" style="width:7%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 250
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill fail">High risk</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-igen6_edac"><code>igen6_edac</code></a></td>
+  <td>
+    CRC <span class="pill warn">47</span>
+    real-missing <span class="pill fail">0</span> / 49
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 49
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill pass">DKMS OK</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-intel-ipu6"><code>intel-ipu6</code></a></td>
+  <td>
+    CRC <span class="pill warn">97</span>
+    real-missing <span class="pill fail">1</span> / 105
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 105
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill warn">DKMS with shims</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-intel-ipu6-isys"><code>intel-ipu6-isys</code></a></td>
+  <td>
+    CRC <span class="pill warn">116</span>
+    real-missing <span class="pill fail">26</span> / 144
+    <div><span class="barbox"><span class="bar" style="width:18%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 144
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill fail">High risk</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-intel-ipu7"><code>intel-ipu7</code></a></td>
+  <td>
+    CRC <span class="pill warn">105</span>
+    real-missing <span class="pill fail">1</span> / 114
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 114
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill warn">DKMS with shims</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-intel-ipu7-isys"><code>intel-ipu7-isys</code></a></td>
+  <td>
+    CRC <span class="pill warn">113</span>
+    real-missing <span class="pill fail">21</span> / 136
+    <div><span class="barbox"><span class="bar" style="width:15%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 136
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill fail">High risk</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-intel_pmc_core"><code>intel_pmc_core</code></a></td>
+  <td>
+    CRC <span class="pill warn">78</span>
+    real-missing <span class="pill fail">4</span> / 85
+    <div><span class="barbox"><span class="bar" style="width:4%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 85
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill warn">DKMS with shims</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-intel_rapl_common"><code>intel_rapl_common</code></a></td>
+  <td>
+    CRC <span class="pill warn">51</span>
+    real-missing <span class="pill fail">2</span> / 56
+    <div><span class="barbox"><span class="bar" style="width:3%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 56
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill warn">DKMS with shims</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-intel_rapl_msr"><code>intel_rapl_msr</code></a></td>
+  <td>
+    CRC <span class="pill warn">19</span>
+    real-missing <span class="pill fail">4</span> / 24
+    <div><span class="barbox"><span class="bar" style="width:16%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 24
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill warn">DKMS with shims</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-intel_rapl_tpmi"><code>intel_rapl_tpmi</code></a></td>
+  <td>
+    CRC <span class="pill warn">22</span>
+    real-missing <span class="pill fail">2</span> / 25
+    <div><span class="barbox"><span class="bar" style="width:8%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 25
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill warn">DKMS with shims</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-intel_skl_int3472_discrete"><code>intel_skl_int3472_discrete</code></a></td>
+  <td>
+    CRC <span class="pill warn">48</span>
+    real-missing <span class="pill fail">3</span> / 53
+    <div><span class="barbox"><span class="bar" style="width:5%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 53
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill warn">DKMS with shims</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-ipmi_watchdog"><code>ipmi_watchdog</code></a></td>
+  <td>
+    CRC <span class="pill warn">51</span>
+    real-missing <span class="pill fail">4</span> / 58
+    <div><span class="barbox"><span class="bar" style="width:6%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 58
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill warn">DKMS with shims</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-ipu-bridge"><code>ipu-bridge</code></a></td>
+  <td>
+    CRC <span class="pill warn">49</span>
+    real-missing <span class="pill fail">0</span> / 52
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 52
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill pass">DKMS OK</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-ksz_switch"><code>ksz_switch</code></a></td>
+  <td>
+    CRC <span class="pill warn">101</span>
+    real-missing <span class="pill fail">6</span> / 110
+    <div><span class="barbox"><span class="bar" style="width:5%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 110
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill fail">High risk</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-max96717"><code>max96717</code></a></td>
+  <td>
+    CRC <span class="pill warn">56</span>
+    real-missing <span class="pill fail">1</span> / 58
+    <div><span class="barbox"><span class="bar" style="width:1%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 58
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill warn">DKMS with shims</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-mei"><code>mei</code></a></td>
+  <td>
+    CRC <span class="pill warn">123</span>
+    real-missing <span class="pill fail">4</span> / 133
+    <div><span class="barbox"><span class="bar" style="width:3%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 133
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill warn">DKMS with shims</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-mei-gsc"><code>mei-gsc</code></a></td>
+  <td>
+    CRC <span class="pill warn">41</span>
+    real-missing <span class="pill fail">0</span> / 41
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 41
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill pass">DKMS OK</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-mei-vsc"><code>mei-vsc</code></a></td>
+  <td>
+    CRC <span class="pill warn">41</span>
+    real-missing <span class="pill fail">0</span> / 42
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 42
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill pass">DKMS OK</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-mxl-gpy"><code>mxl-gpy</code></a></td>
+  <td>
+    CRC <span class="pill warn">45</span>
+    real-missing <span class="pill fail">0</span> / 45
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 45
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill pass">DKMS OK</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-phylink"><code>phylink</code></a></td>
+  <td>
+    CRC <span class="pill warn">102</span>
+    real-missing <span class="pill fail">11</span> / 115
+    <div><span class="barbox"><span class="bar" style="width:9%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 115
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill fail">High risk</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-pps_gen_tio"><code>pps_gen_tio</code></a></td>
+  <td>
+    CRC <span class="pill warn">23</span>
+    real-missing <span class="pill fail">6</span> / 30
+    <div><span class="barbox"><span class="bar" style="width:20%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 30
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill fail">High risk</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-pps-ldisc"><code>pps-ldisc</code></a></td>
+  <td>
+    CRC <span class="pill warn">19</span>
+    real-missing <span class="pill fail">0</span> / 20
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 20
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill pass">DKMS OK</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-pps_parport"><code>pps_parport</code></a></td>
+  <td>
+    CRC <span class="pill warn">27</span>
+    real-missing <span class="pill fail">0</span> / 29
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 29
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill pass">DKMS OK</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-processor_thermal_rapl"><code>processor_thermal_rapl</code></a></td>
+  <td>
+    CRC <span class="pill warn">10</span>
+    real-missing <span class="pill fail">0</span> / 10
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 10
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill pass">DKMS OK</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-snd-soc-sof_rt5682"><code>snd-soc-sof_rt5682</code></a></td>
+  <td>
+    CRC <span class="pill warn">55</span>
+    real-missing <span class="pill fail">2</span> / 58
+    <div><span class="barbox"><span class="bar" style="width:3%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 58
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill warn">DKMS with shims</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-snd-sof-intel-hda-generic"><code>snd-sof-intel-hda-generic</code></a></td>
+  <td>
+    CRC <span class="pill warn">84</span>
+    real-missing <span class="pill fail">61</span> / 147
+    <div><span class="barbox"><span class="bar" style="width:41%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 147
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill fail">Very high risk</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-soundwire-generic-allocation"><code>soundwire-generic-allocation</code></a></td>
+  <td>
+    CRC <span class="pill warn">14</span>
+    real-missing <span class="pill fail">1</span> / 19
+    <div><span class="barbox"><span class="bar" style="width:5%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 19
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill warn">DKMS with shims</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-spi-pxa2xx-core"><code>spi-pxa2xx-core</code></a></td>
+  <td>
+    CRC <span class="pill warn">42</span>
+    real-missing <span class="pill fail">0</span> / 44
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 44
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill pass">DKMS OK</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-stmmac"><code>stmmac</code></a></td>
+  <td>
+    CRC <span class="pill warn">271</span>
+    real-missing <span class="pill fail">27</span> / 304
+    <div><span class="barbox"><span class="bar" style="width:8%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 304
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill fail">High risk</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-v4l2-async"><code>v4l2-async</code></a></td>
+  <td>
+    CRC <span class="pill warn">31</span>
+    real-missing <span class="pill fail">2</span> / 36
+    <div><span class="barbox"><span class="bar" style="width:5%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 36
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill warn">DKMS with shims</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+<tr>
+  <td><a href="#mod-virtio-gpu"><code>virtio-gpu</code></a></td>
+  <td>
+    CRC <span class="pill warn">243</span>
+    real-missing <span class="pill fail">13</span> / 264
+    <div><span class="barbox"><span class="bar" style="width:4%"></span></span></div>
+  </td>
+  <td>
+    CRC <span class="pill warn">0</span>
+    real-missing <span class="pill fail">0</span> / 264
+    <div><span class="barbox"><span class="bar" style="width:0%"></span></span></div>
+  </td>
+  <td><span class="pill fail">High risk</span></td>
+  <td><span class="pill pass">DKMS OK</span></td>
+</tr>
+</table>
+
+<h3>Legend</h3>
+<p>
+<span class="pill pass">DKMS OK</span> rebuild loads cleanly &nbsp;
+<span class="pill warn">DKMS with shims</span> ≤ 5 APIs need backport &nbsp;
+<span class="pill fail">High risk</span> 6–30 APIs missing &nbsp;
+<span class="pill fail">Very high risk</span> > 30 APIs missing
+</p>
+
+<hr>
+
+<h2>Method &amp; definitions</h2>
+<p>
+For each module, run <code>modprobe --dump-modversions</code> on the prebuilt
+<code>.ko</code> and compare the <code>(symbol, CRC)</code> table against
+the target Ubuntu kernel's <code>Module.symvers</code>.
+</p>
+<ul>
+  <li><b>CRC mismatch</b> = symbol exists but CRC differs. <em>Recoverable
+      by DKMS rebuild.</em></li>
+  <li><b>Real-missing</b> = symbol absent on target, after filtering
+      kernel-internal renames (<code>*_noprof</code>,
+      <code>__ref_stack_chk_guard</code>, etc.). <strong>This is the real
+      DKMS blocker count.</strong></li>
+</ul>
+
+<h2>Per-module missing-API detail</h2>
+<h3 id="mod-dp83867"><code>dp83867</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 1 APIs missing</summary>
+<ul class="syms">
+<li>phy_disable_eee</li>
+</ul>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-dwmac-intel"><code>dwmac-intel</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 1 APIs missing</summary>
+<ul class="syms">
+<li>xpcs_to_phylink_pcs</li>
+</ul>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-hpwdt"><code>hpwdt</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-igc"><code>igc</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 19 APIs missing</summary>
+<ul class="syms">
+<li>ethtool_mmsv_get_mm</li>
+<li>napi_alloc_skb</li>
+<li>__dma_sync_single_for_cpu</li>
+<li>ktime_get_clock_ts64</li>
+<li>hrtimer_setup</li>
+<li>ethtool_mmsv_set_mm</li>
+<li>ethtool_mmsv_init</li>
+<li>__dma_sync_single_for_device</li>
+<li>netif_napi_set_irq_locked</li>
+<li>cpu_number</li>
+<li>netif_napi_add_weight_locked</li>
+<li>ethtool_mmsv_link_state_handle</li>
+<li>__netif_napi_del_locked</li>
+<li>ethtool_mmsv_stop</li>
+<li>skb_add_rx_frag_netmem</li>
+<li>sized_strscpy</li>
+<li>gro_receive_skb</li>
+<li>ethtool_mmsv_event_handle</li>
+<li>timer_init_key</li>
+</ul>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-igen6_edac"><code>igen6_edac</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-intel-ipu6"><code>intel-ipu6</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 1 APIs missing</summary>
+<ul class="syms">
+<li>pcim_iomap_region</li>
+</ul>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-intel-ipu6-isys"><code>intel-ipu6-isys</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 26 APIs missing</summary>
+<ul class="syms">
+<li>ipu6_fw_com_open</li>
+<li>ipu6_dma_free</li>
+<li>ipu6_mmu_hw_cleanup</li>
+<li>ipu6_mmu_hw_init</li>
+<li>ipu6_cpd_free_pkg_dir</li>
+<li>__v4l2_device_register_subdev</li>
+<li>ipu6_dma_alloc</li>
+<li>ipu6_dma_unmap_sgtable</li>
+<li>ipu6_fw_com_ready</li>
+<li>ipu6_fw_com_close</li>
+<li>ipu6_recv_put_token</li>
+<li>ipu6_buttress_tsc_ticks_to_ns</li>
+<li>ipu6_send_get_token</li>
+<li>ipu6_recv_get_token</li>
+<li>ipu6_buttress_map_fw_image</li>
+<li>ipu6_fw_com_release</li>
+<li>ipu6_send_put_token</li>
+<li>ipu6_buttress_start_tsc_sync</li>
+<li>ipu6_cpd_create_pkg_dir</li>
+<li>ipu6_dma_map_sgtable</li>
+<li>ipu6_buttress_tsc_read</li>
+<li>ipu6_buttress_unmap_fw_image</li>
+<li>sized_strscpy</li>
+<li>ipu6_fw_com_prepare</li>
+<li>__v4l2_get_link_freq_pad</li>
+<li>ipu6_configure_spc</li>
+</ul>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-intel-ipu7"><code>intel-ipu7</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 1 APIs missing</summary>
+<ul class="syms">
+<li>pcim_iomap_region</li>
+</ul>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-intel-ipu7-isys"><code>intel-ipu7-isys</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 21 APIs missing</summary>
+<ul class="syms">
+<li>ipu7_syscom_put_token</li>
+<li>ipu7_boot_init_boot_config</li>
+<li>ipu7_syscom_get_token</li>
+<li>ipu_buttress_start_tsc_sync</li>
+<li>ipu_buttress_get_isys_freq</li>
+<li>ipu_buttress_wakeup_is_uc</li>
+<li>__v4l2_device_register_subdev</li>
+<li>ipu_buttress_tsc_ticks_to_ns</li>
+<li>ipu7_dma_map_sgtable</li>
+<li>ipu7_boot_release_boot_config</li>
+<li>ipu7_dma_free</li>
+<li>ipu7_boot_start_fw</li>
+<li>ipu7_dma_unmap_sgtable</li>
+<li>ipu7_mmu_hw_cleanup</li>
+<li>ipu7_dma_alloc</li>
+<li>ipu7_mmu_hw_init</li>
+<li>ipu_buttress_tsc_read</li>
+<li>ipu7_dma_sync_single</li>
+<li>sized_strscpy</li>
+<li>__v4l2_get_link_freq_pad</li>
+<li>ipu7_boot_stop_fw</li>
+</ul>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-intel_pmc_core"><code>intel_pmc_core</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 4 APIs missing</summary>
+<ul class="syms">
+<li>validate_usercopy_range</li>
+<li>debugfs_create_file_full</li>
+<li>cpu_number</li>
+<li>pmc_ssram_telemetry_get_pmc_info</li>
+</ul>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-intel_rapl_common"><code>intel_rapl_common</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 2 APIs missing</summary>
+<ul class="syms">
+<li>hrtimer_setup</li>
+<li>__max_dies_per_package</li>
+</ul>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-intel_rapl_msr"><code>intel_rapl_msr</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 4 APIs missing</summary>
+<ul class="syms">
+<li>rdmsrq_safe_on_cpu</li>
+<li>rapl_add_package_cpuslocked</li>
+<li>rapl_find_package_domain_cpuslocked</li>
+<li>rapl_remove_package_cpuslocked</li>
+</ul>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-intel_rapl_tpmi"><code>intel_rapl_tpmi</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 2 APIs missing</summary>
+<ul class="syms">
+<li>rapl_package_add_pmu</li>
+<li>rapl_package_remove_pmu</li>
+</ul>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-intel_skl_int3472_discrete"><code>intel_skl_int3472_discrete</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 3 APIs missing</summary>
+<ul class="syms">
+<li>skl_int3472_fill_cldb</li>
+<li>skl_int3472_get_acpi_buffer</li>
+<li>skl_int3472_get_sensor_adev_and_name</li>
+</ul>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-ipmi_watchdog"><code>ipmi_watchdog</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 4 APIs missing</summary>
+<ul class="syms">
+<li>__trace_set_current_state</li>
+<li>ipmi_panic_request_and_wait</li>
+<li>sized_strscpy</li>
+<li>__tracepoint_sched_set_state_tp</li>
+</ul>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-ipu-bridge"><code>ipu-bridge</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-ksz_switch"><code>ksz_switch</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 6 APIs missing</summary>
+<ul class="syms">
+<li>ietf_dscp_to_ieee8021q_tt</li>
+<li>ieee8021q_tt_to_tc</li>
+<li>xpcs_create_pcs_mdiodev</li>
+<li>sized_strscpy</li>
+<li>irq_domain_instantiate</li>
+<li>timer_init_key</li>
+</ul>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-max96717"><code>max96717</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 1 APIs missing</summary>
+<ul class="syms">
+<li>__v4l2_async_register_subdev</li>
+</ul>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-mei"><code>mei</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 4 APIs missing</summary>
+<ul class="syms">
+<li>validate_usercopy_range</li>
+<li>debugfs_create_file_full</li>
+<li>sized_strscpy</li>
+<li>timer_init_key</li>
+</ul>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-mei-gsc"><code>mei-gsc</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-mei-vsc"><code>mei-vsc</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-mxl-gpy"><code>mxl-gpy</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-phylink"><code>phylink</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 11 APIs missing</summary>
+<ul class="syms">
+<li>phy_support_eee</li>
+<li>fwnode_property_read_bool</li>
+<li>phy_caps_linkmodes</li>
+<li>phy_config_inband</li>
+<li>phy_disable_eee</li>
+<li>phy_eee_tx_clock_stop_capable</li>
+<li>phy_caps_lookup</li>
+<li>phy_caps_from_interface</li>
+<li>phy_inband_caps</li>
+<li>phy_eee_rx_clock_stop</li>
+<li>timer_init_key</li>
+</ul>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-pps_gen_tio"><code>pps_gen_tio</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 6 APIs missing</summary>
+<ul class="syms">
+<li>hrtimer_setup</li>
+<li>ktime_real_to_base_clock</li>
+<li>timekeeping_clocksource_has_base</li>
+<li>pps_gen_unregister_source</li>
+<li>pps_gen_register_source</li>
+<li>pps_gen_event</li>
+</ul>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-pps-ldisc"><code>pps-ldisc</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-pps_parport"><code>pps_parport</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-processor_thermal_rapl"><code>processor_thermal_rapl</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-snd-soc-sof_rt5682"><code>snd-soc-sof_rt5682</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 2 APIs missing</summary>
+<ul class="syms">
+<li>sof_intel_board_get_ctx</li>
+<li>max_98373_dai_link</li>
+</ul>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-snd-sof-intel-hda-generic"><code>snd-sof-intel-hda-generic</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 61 APIs missing</summary>
+<ul class="syms">
+<li>hda_dsp_trace_init</li>
+<li>snd_soc_acpi_intel_get_codec_tplg_suffix</li>
+<li>snd_soc_acpi_intel_detect_codec_type</li>
+<li>hda_dsp_resume</li>
+<li>hda_dsp_stream_threaded_handler</li>
+<li>hda_dsp_ctrl_ppcap_enable</li>
+<li>hda_dsp_trace_release</li>
+<li>hda_dsp_pcm_open</li>
+<li>hda_dai_config</li>
+<li>sof_hda_bus_exit</li>
+<li>hda_dsp_check_stream_irq</li>
+<li>hda_dsp_ctrl_ppcap_int_enable</li>
+<li>hda_set_stream_data_offset</li>
+<li>hda_dsp_ctrl_clock_power_gating</li>
+<li>hda_dsp_get_stream_ldp</li>
+<li>hda_dsp_runtime_suspend</li>
+<li>hda_probes_unregister</li>
+<li>sdw_hda_dai_hw_params</li>
+<li>sdw_hda_dai_trigger</li>
+<li>sof_hda_position_quirk</li>
+<li>hda_probes_register</li>
+<li>snd_soc_acpi_intel_get_amp_tplg_suffix</li>
+<li>hda_dsp_ctrl_init_chip</li>
+<li>hda_is_chain_dma_supported</li>
+<li>hda_dsp_suspend</li>
+<li>hda_check_ipc_irq</li>
+<li>hda_get_interface_mask</li>
+<li>hda_dsp_pcm_pointer</li>
+<li>hda_dsp_ctrl_get_caps</li>
+<li>hda_dsp_get_stream_llp</li>
+<li>cpu_number</li>
+<li>hda_dsp_set_hw_params_upon_resume</li>
+<li>hda_sdw_int_enable</li>
+<li>sof_hda_bus_init</li>
+<li>__SCT__tp_func_sof_intel_hda_irq</li>
+<li>snd_soc_acpi_intel_detect_amp_type</li>
+<li>skl_dai</li>
+<li>hda_dsp_core_reset_power_down</li>
+<li>hda_dsp_trace_trigger</li>
+<li>hda_ipc_msg_data</li>
+<li>hda_dsp_pcm_ack</li>
+<li>hda_dsp_stream_hw_free</li>
+<li>hda_dsp_dump</li>
+<li>hda_dsp_ipc_get_mailbox_offset</li>
+<li>hda_dsp_ipc_get_window_offset</li>
+<li>hda_dsp_pcm_hw_params</li>
+<li>hda_dsp_pcm_trigger</li>
+<li>__SCK__tp_func_sof_intel_hda_irq</li>
+<li>hda_dsp_d0i3_work</li>
+<li>__tracepoint_sof_intel_hda_irq</li>
+<li>hda_sdw_check_lcount</li>
+<li>hda_dsp_runtime_resume</li>
+<li>hda_dsp_pcm_close</li>
+<li>hda_dsp_cl_boot_firmware</li>
+<li>hda_dsp_stream_free</li>
+<li>sdw_hda_dai_hw_free</li>
+<li>hda_dsp_ext_man_get_cavs_config_data</li>
+<li>hda_dsp_runtime_idle</li>
+<li>hda_sdw_process_wakeen</li>
+<li>hda_dsp_stream_init</li>
+<li>timer_init_key</li>
+</ul>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-soundwire-generic-allocation"><code>soundwire-generic-allocation</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 1 APIs missing</summary>
+<ul class="syms">
+<li>is_clock_scaling_supported_by_slave</li>
+</ul>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-spi-pxa2xx-core"><code>spi-pxa2xx-core</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-stmmac"><code>stmmac</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 27 APIs missing</summary>
+<ul class="syms">
+<li>ethtool_mmsv_get_mm</li>
+<li>napi_alloc_skb</li>
+<li>__dma_sync_single_for_cpu</li>
+<li>xpcs_config_eee_mult_fact</li>
+<li>page_pool_put_unrefed_netmem</li>
+<li>hrtimer_setup</li>
+<li>ethtool_mmsv_set_mm</li>
+<li>xpcs_to_phylink_pcs</li>
+<li>debugfs_create_file_full</li>
+<li>ethtool_mmsv_init</li>
+<li>__dma_sync_single_for_device</li>
+<li>phylink_pcs_pre_init</li>
+<li>cpu_number</li>
+<li>netif_napi_add_weight_locked</li>
+<li>ethtool_mmsv_link_state_handle</li>
+<li>__netif_napi_del_locked</li>
+<li>ethtool_mmsv_stop</li>
+<li>skb_add_rx_frag_netmem</li>
+<li>phylink_rx_clk_stop_block</li>
+<li>phylink_prepare_resume</li>
+<li>debugfs_change_name</li>
+<li>sized_strscpy</li>
+<li>gro_receive_skb</li>
+<li>phylink_rx_clk_stop_unblock</li>
+<li>xpcs_create_fwnode</li>
+<li>ethtool_mmsv_event_handle</li>
+<li>timer_init_key</li>
+</ul>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-v4l2-async"><code>v4l2-async</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 2 APIs missing</summary>
+<ul class="syms">
+<li>__v4l2_device_register_subdev</li>
+<li>debugfs_create_file_full</li>
+</ul>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+<h3 id="mod-virtio-gpu"><code>virtio-gpu</code></h3>
+<details>
+<summary>vs <b>Ubuntu 24.04 GA (kernel 6.8)</b> &mdash; 13 APIs missing</summary>
+<ul class="syms">
+<li>__register_virtio_driver</li>
+<li>drm_fbdev_shmem_driver_fbdev_probe</li>
+<li>__dma_sync_sg_for_device</li>
+<li>drm_gem_shmem_unpin_locked</li>
+<li>drm_gem_shmem_pin_locked</li>
+<li>validate_usercopy_range</li>
+<li>__vma_start_write</li>
+<li>drm_client_setup</li>
+<li>cpu_number</li>
+<li>sized_strscpy</li>
+<li>drm_gem_shmem_vunmap_locked</li>
+<li>drm_gem_shmem_vmap_locked</li>
+<li>__kmem_cache_create_args</li>
+</ul>
+</details>
+<details>
+<summary>vs <b>Ubuntu 24.04 HWE (kernel 6.17)</b> &mdash; 0 APIs missing</summary>
+<p class="small">No real-missing APIs &mdash; DKMS rebuild is sufficient.</p>
+</details>
+
+<h2>Source files</h2>
+<ul>
+  <li><code>summary.csv</code> &mdash; raw numbers driving this page.</li>
+  <li><code>modules.txt</code> &mdash; modules discovered from the diff.</li>
+  <li><code>manifest.txt</code> &mdash; tag, base, head, generation timestamp.</li>
+  <li><code>raw/&lt;mod&gt;-vs-&lt;target&gt;/</code> &mdash; per-run missing /
+      crc_mismatch detail.</li>
+  <li><code>analysis/&lt;mod&gt;-vs-&lt;target&gt;-real-missing.txt</code>
+      &mdash; filtered API-removal lists.</li>
+</ul>
+
+</body></html>

@@ -1,0 +1,11 @@
+phy_support_eee
+fwnode_property_read_bool
+phy_caps_linkmodes
+phy_config_inband
+phy_disable_eee
+phy_eee_tx_clock_stop_capable
+phy_caps_lookup
+phy_caps_from_interface
+phy_inband_caps
+phy_eee_rx_clock_stop
+timer_init_key

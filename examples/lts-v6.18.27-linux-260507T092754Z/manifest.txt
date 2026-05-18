@@ -1,0 +1,10 @@
+tag=lts-v6.18.27-linux-260507T092754Z
+base=v6.18.27
+head_rev=722b023c516c8bfbfe652bb6d118f38eda6a2cf2
+head=722b023c516c8bfbfe652bb6d118f38eda6a2cf2
+kernel_src=<KERNEL_SRC>
+kmods=<DKMS_VERIFIER>/releases/lts-v6.18.27-linux-260507T092754Z/imported/kernel
+generated_at=2026-05-18T13:48:31+08:00
+n_modules=34
+n_modules_checked=34
+targets=ubuntu-24.04-ga ubuntu-24.04-hwe

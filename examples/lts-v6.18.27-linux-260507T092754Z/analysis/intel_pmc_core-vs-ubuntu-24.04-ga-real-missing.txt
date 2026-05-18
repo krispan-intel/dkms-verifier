@@ -1,0 +1,4 @@
+validate_usercopy_range
+debugfs_create_file_full
+cpu_number
+pmc_ssram_telemetry_get_pmc_info

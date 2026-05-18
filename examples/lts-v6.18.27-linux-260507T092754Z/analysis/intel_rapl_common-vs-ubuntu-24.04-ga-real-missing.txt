@@ -1,0 +1,2 @@
+hrtimer_setup
+__max_dies_per_package
