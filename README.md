@@ -21,8 +21,10 @@ target Canonical kernels.
 - **Emits** a self-contained HTML report in `releases/<tag>/report.html`.
 - **Diffs** consecutive releases to surface improvements/regressions.
 
+> Languages: **English** · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md)
+>
 > **First time using this?** Read [TUTORIAL.md](TUTORIAL.md) — a step-by-step
-> walkthrough for new users / interns.
+> walkthrough for beginners.
 >
 > **Curious where the methodology came from?** See [BACKGROUND.md](BACKGROUND.md)
 > — how this borrows from Greg KH's stable-kernel rules and Android GKI's

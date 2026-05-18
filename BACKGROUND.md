@@ -1,135 +1,161 @@
-# Where this came from — Android GKI &amp; Greg KH
+# Where this came from — Android GKI & Greg KH
 
-`dkms-verifier` 不是憑空想出來的。它把兩種既存的 kernel ABI 治理思路接起來，
-然後改造成適合「OOT kernel → Ubuntu DKMS」這個 use case。讀完這份你就知道：
+> Languages: **English** · [简体中文](BACKGROUND.zh-CN.md) · [繁體中文](BACKGROUND.zh-TW.md)
 
-- 哪些概念是抄 Greg KH (upstream stable maintainer) 的
-- 哪些是抄 Android GKI 的
-- 我們改了什麼、為什麼改
+`dkms-verifier` did not appear out of thin air. It splices together two
+existing schools of kernel ABI governance and adapts them for one specific
+use case: "OOT kernel → Ubuntu DKMS". After reading this you will know:
 
-不需要事先了解 Android 也能用 framework；這份只是給想知道**為什麼長這樣**的人看。
+- which concepts came from Greg KH (upstream stable maintainer)
+- which came from Android GKI
+- what we changed and why
+
+You don't need to understand Android to use the framework — this doc is for
+people curious **why** it looks the way it does.
 
 ---
 
-## 兩種既有的 ABI 治理流派
+## The two existing schools
 
-### 流派 1: Greg KH / upstream stable kernel
+### School 1: Greg KH / upstream stable kernel
 
-**目標**：把 Linux LTS（v6.6, v6.12, v6.18 …）維持在「不破壞既有 module」的狀態。
+**Goal**: keep Linux LTS series (v6.6, v6.12, v6.18, …) in a state that
+"doesn't break existing modules."
 
-**做法**：
-- **`CONFIG_MODVERSIONS=y`** — kernel 為每個 export symbol 算一個 CRC，存在 `Module.symvers`。
-- **`scripts/genksyms`** 算 CRC。
-- 載入 module 時，`insmod` 比對 module `__versions` section 和 kernel CRC，不一致就拒載。
-- **沒有**自動化 ABI tooling，靠**patch review 規範**：`stable-kernel-rules.rst` 明文禁止改變 `EXPORT_SYMBOL` 簽章、struct 重排、刪除 export 等。
-- 想 diff 的人自己跑 [libabigail](https://sourceware.org/libabigail/) 的 `abidiff` / `kmidiff`。
+**How**:
+- **`CONFIG_MODVERSIONS=y`** — the kernel computes a CRC for every exported
+  symbol and stores it in `Module.symvers`.
+- **`scripts/genksyms`** computes those CRCs.
+- On load, `insmod` compares the module's `__versions` section against the
+  kernel's CRCs; mismatch = refuse.
+- **No automated ABI tooling** — relies on **patch-review discipline**:
+  `stable-kernel-rules.rst` explicitly forbids changing `EXPORT_SYMBOL`
+  signatures, struct reordering, removing exports, etc.
+- Anyone who wants a diff runs [libabigail](https://sourceware.org/libabigail/)'s
+  `abidiff` / `kmidiff` themselves.
 
-**Greg 不跑 STG，他靠流程 + MODVERSIONS CRC**。
-這是 `dkms-verifier` 的「**CRC layer**」原始來源 — `check_module.sh` 跑的就是 modversion 比對。
+**Greg doesn't run STG; he relies on process + MODVERSIONS CRC.**
+That is the original source of `dkms-verifier`'s **CRC layer** —
+`check_module.sh` is essentially a modversion comparison.
 
-參考：
+References:
 - `Documentation/process/stable-kernel-rules.rst`
 - https://www.kernel.org/category/releases.html
 
-### 流派 2: Android Common Kernel (ACK) + GKI
+### School 2: Android Common Kernel (ACK) + GKI
 
-**目標**：讓 partner（Qualcomm、MediaTek、Samsung、Pixel...）寫的 vendor module，
-不需要每個 LTS 升級都重新 port，只要遵守 GKI 公布的 KMI 就保證能載入。
+**Goal**: let partner vendors (Qualcomm, MediaTek, Samsung, Pixel, …) ship
+modules that don't need re-porting on every LTS bump, as long as they stick
+to the published GKI KMI.
 
-這是**自動化、tag-driven、whitelist-scoped** 的 ABI 治理。
+This is **automated, tag-driven, whitelist-scoped** ABI governance.
 
-如果你 clone 一份 Android Common Kernel 看：
+If you clone an Android Common Kernel:
 
 ```
 android-mainline/
 ├── android/
-│   └── abi_gki_aarch64.xml     # 早期版本，libabigail XML
+│   └── abi_gki_aarch64.xml     # earlier libabigail-XML form
 └── gki/
     └── aarch64/
-        ├── abi.stg                  # 7-8 MB STG snapshot of approved KMI
-        ├── abi.stg.allowed_breaks   # accepted exceptions list
+        ├── abi.stg                  # 7-8 MB STG snapshot of the approved KMI
+        ├── abi.stg.allowed_breaks   # accepted exceptions
         └── symbols/
-            ├── base                 # GKI core symbol list
-            ├── qcom                 # Qualcomm's symbols
+            ├── base                 # GKI core
+            ├── qcom                 # Qualcomm
             ├── mtk                  # MediaTek
-            ├── pixel                # Google's
+            ├── pixel                # Google
             └── ...                  # one per partner
 ```
 
-關鍵概念：
+Key concepts:
 
-| 概念 | Android 怎麼做 | dkms-verifier 怎麼用 |
+| Concept | Android way | dkms-verifier way |
 |---|---|---|
-| **Per-release ABI snapshot** | 每次 push tag 時，CI 重 build kernel + 抽出新的 `abi.stg`，對舊版 diff，違反就 reject。 | 每個 release tag 跑一次 `make release-branch`，產 `releases/<tag>/report.html`。 |
-| **Symbol whitelist scope** | partner 註冊「我會用到的 symbol」到 `symbols/<partner>`，ABI 只在這些 symbol 上強制。 | 自動：`modprobe --dump-modversions` 抽 module 真正用到的 symbol 當 whitelist。 |
-| **Allowed breaks** | `abi.stg.allowed_breaks` 列出已批准的破壞，CI 看到列表內的 diff 就放行。 | 我們不做 — DKMS context 只問「能不能載」，每個 break 都要報。 |
-| **Tooling** | Google [STG](https://github.com/google/stg) (`stg`, `stgdiff`)，from BTF/DWARF，比 libabigail 快很多。 | 用 libabigail 的 `kmidiff` — `apt install abigail-tools` 一行搞定，跨 distro 通用。 |
-| **CI 接點** | Bazel + Kleaf：`tools/bazel run //common:kernel_aarch64_abi_dist`。 | Jenkins + Makefile：`make release-branch BRANCH=...`。 |
+| **Per-release ABI snapshot** | Every tag push triggers CI to rebuild the kernel, extract a fresh `abi.stg`, diff against the previous one, reject violators. | Every release tag → `make release-branch` → `releases/<tag>/report.html`. |
+| **Symbol whitelist scope** | Partners register the symbols they use in `symbols/<partner>`; ABI is enforced only on those. | Automatic: `modprobe --dump-modversions` extracts the symbols a module actually uses, and that becomes its whitelist. |
+| **Allowed breaks** | `abi.stg.allowed_breaks` lists pre-approved breakages; CI lets them through. | We don't have this — DKMS context only asks "will this load?", every break must be reported. |
+| **Tooling** | Google [STG](https://github.com/google/stg) (`stg`, `stgdiff`) over BTF/DWARF — much faster than libabigail. | libabigail's `kmidiff` — `apt install abigail-tools` is enough; works across distros. |
+| **CI surface** | Bazel + Kleaf: `tools/bazel run //common:kernel_aarch64_abi_dist`. | Jenkins + Make: `make release-branch BRANCH=...`. |
 
-參考：
-- Android GKI 總覽：https://source.android.com/docs/core/architecture/kernel/generic-kernel-image
-- KMI symbol list 規範：https://source.android.com/docs/core/architecture/kernel/symbols
-- STG repo：https://github.com/google/stg
-- Kleaf (Bazel 包裝層) 文件：在 Android Common Kernel 樹裡 `build/kernel/kleaf/README.md`
+References:
+- Android GKI overview — https://source.android.com/docs/core/architecture/kernel/generic-kernel-image
+- KMI symbol-list spec — https://source.android.com/docs/core/architecture/kernel/symbols
+- STG repo — https://github.com/google/stg
+- Kleaf docs — `build/kernel/kleaf/README.md` inside an ACK tree
 
 ---
 
-## 兩流派合起來 → dkms-verifier
+## Combining the two → dkms-verifier
 
-`dkms-verifier` 借 Android GKI 的**自動化框架**和 Greg KH 的**MODVERSIONS CRC 主力**，組合成第三個 use case：
+`dkms-verifier` borrows the **automation framework** from Android GKI and the
+**MODVERSIONS CRC enforcement** from Greg KH, and combines them for a third
+use case:
 
-> 「我有 OOT kernel，想在 Ubuntu LTS 上跑 — 我的 module 能不能變成 DKMS package？」
+> "I have an OOT kernel; I want my modules to run on Ubuntu LTS — can they
+>  be a DKMS package?"
 
-### 從 Android 借來的東西
+### What we borrowed from Android
 
-1. **「Track ABI per release tag」** — `releases/<tag>/` 目錄結構就是這個概念。
-   GKI 一個 tag = 一份 `abi.stg`；我們一個 tag = 一份 `summary.csv` + `report.html`。
+1. **"Track ABI per release tag"** — the `releases/<tag>/` directory layout.
+   GKI: one tag = one `abi.stg`; us: one tag = one `summary.csv` +
+   `report.html`.
 
-2. **Symbol whitelist scope** — Android 的 `symbols/<partner>` → 我們的「module 自己用 `nm -u` 抽出來的 symbol set」。
-   兩者都解決同一個問題：**全 kernel diff 噪音太多，要先框小範圍**。
+2. **Symbol whitelist scope** — Android's `symbols/<partner>` →
+   our "the set of symbols a module actually imports, extracted live with
+   `nm -u`". Both solve the same problem: **whole-kernel diffs are too
+   noisy; scope first**.
 
-3. **CRC vs Real-missing 的二層分層** — 跟 Android「symbol 還在但 type 變了」vs「symbol 完全不見」的分類同源。
+3. **The two-tier classification (CRC vs Real-missing)** — same shape as
+   Android's "symbol still there but type changed" vs "symbol gone."
 
-4. **`allowed_breaks` 的精神** — 我們在 `run_release.sh` 裡 hardcode 一組 kernel-internal renames
-   （`*_noprof`, `__ref_stack_chk_guard`, `__fortify_panic`...）當「允許清單」，
-   不算進 real-missing。等於精簡版的 `abi.stg.allowed_breaks`。
+4. **The spirit of `allowed_breaks`** — `run_release.sh` hardcodes a small
+   set of kernel-internal renames (`*_noprof`, `__ref_stack_chk_guard`,
+   `__fortify_panic`, …) that don't count as real-missing. A miniature
+   `abi.stg.allowed_breaks`.
 
-5. **Tag-driven CI** — `Jenkinsfile` 接 `copyArtifacts` + `publishHTML`，
-   跟 Android 的「每個 tag push → ABI job 跑 → 報告 publish」流程一比一。
+5. **Tag-driven CI** — `Jenkinsfile` ↔ `copyArtifacts` ↔ `publishHTML`
+   maps 1:1 to Android's "tag push → ABI job runs → report published."
 
-### 從 Greg KH 借來的東西
+### What we borrowed from Greg KH
 
-1. **MODVERSIONS CRC 是真正能擋 `insmod` 的東西** — 我們的「CRC mismatch」就是這層。
-2. **`Module.symvers` 是檔案契約** — refresh_targets.sh 抓的就是這個檔。
-3. **「不要過度 engineer」的精神** — Greg 不跑 STG 也活得好，所以我們也決定先不跑 STG，
-   用 `kmidiff`（一個 apt 指令）就能 cover 大部分需求。
+1. **MODVERSIONS CRC is the actual `insmod` gatekeeper** — that's our
+   "CRC mismatch" layer.
+2. **`Module.symvers` is the file contract** — `refresh_targets.sh`
+   downloads exactly that file.
+3. **"Don't over-engineer"** — Greg gets along fine without STG, so we
+   chose not to ship STG either; `kmidiff` (one apt command) covers most
+   needs.
 
-### 我們改了什麼
+### What we changed
 
-| 改動 | 原因 |
+| Change | Reason |
 |---|---|
-| `stg` / `stgdiff` → `kmidiff` (libabigail) | apt 一行裝完，不用 build。STG 在 Android 工具鏈外不好用。 |
-| 靜態 partner symbol list → 動態從 `.ko` 抽 | OOT use case 不知道哪家 partner，但每次都有具體 module。 |
-| 不做 `abi.stg.allowed_breaks` | DKMS 角度每個 break 都重要，不能「批准」掉。 |
-| 加「real-missing 過濾」 | Greg 跟 Android 都不需要這個，因為他們重編 kernel；我們是 DKMS（重編 module 但不重編 kernel），所以要區分「rebuild 救得到」vs「救不到」。 |
-| 加「對多個 Ubuntu target 同時 diff」 | Android 一個 release 對應一個 KMI；我們可能要同時對 6.8 GA + 6.17 HWE，所以 `targets.conf` 是 list。 |
+| `stg` / `stgdiff` → `kmidiff` (libabigail) | One apt line, no build. STG isn't pleasant outside Android's toolchain. |
+| Static partner symbol list → dynamic per-`.ko` extraction | OOT use case has no notion of partners, but every run has concrete modules. |
+| No `abi.stg.allowed_breaks` workflow | DKMS-perspective: every break matters, none is "approvable away." |
+| Added the "real-missing" filter | Greg and Android don't need it because they recompile the kernel; we recompile only the module (DKMS), so we must distinguish "rebuild can fix this" vs "it can't." |
+| Diff against multiple Ubuntu targets at once | Android: one release ↔ one KMI. Us: a single release may need to target both 6.8 GA and 6.17 HWE; `targets.conf` is a list. |
 
 ---
 
-## 一句話總結
+## One-line summary
 
-> **Greg KH 的 stable kernel 流程**告訴我們「modversion CRC 是真正在守的東西」。
-> **Android GKI** 告訴我們「ABI 治理可以自動化、可以 tag-driven、可以用 symbol whitelist 框 scope」。
-> **`dkms-verifier`** = (Greg 的 CRC) × (Android 的自動化) × (DKMS 的 real-missing 過濾)。
+> **Greg KH's stable-kernel discipline** told us "modversion CRC is the
+> thing actually being guarded."
+> **Android GKI** told us "ABI governance can be automated, tag-driven,
+> and whitelist-scoped."
+> **`dkms-verifier`** = (Greg's CRC) × (Android's automation) × (DKMS's
+> real-missing filter).
 
 ---
 
-## 想看真品
+## Looking at the real thing
 
-如果你想看 Android 是怎麼做的：
+If you want to see how Android actually does it:
 
 ```sh
-# 找一棵 Android Common Kernel
+# Grab an Android Common Kernel
 git clone https://android.googlesource.com/kernel/common -b android-mainline
 cd common
 
@@ -145,24 +171,29 @@ wc -l gki/aarch64/symbols/qcom
 # Allowed breaks
 head gki/aarch64/abi.stg.allowed_breaks
 
-# Bazel 入口（Kleaf）
+# Bazel / Kleaf entry point
 cat build/kernel/kleaf/README.md | head -40
 ```
 
-跟 `dkms-verifier` 對著看，會發現：
+Side-by-side mappings:
 
-- 我們的 `targets/<id>/staged/Module.symvers` ≈ Android 的 `gki/aarch64/abi.stg`（簡化版）
-- 我們的 `releases/<tag>/analysis/<mod>-vs-<target>-real-missing.txt` ≈ Android 的 ABI diff report
-- 我們的 `targets.conf` ≈ Android 的 `symbols/` 目錄概念（但反過來，由 target 決定範圍而不是 module）
-- 我們的 `Makefile release-branch` target ≈ Android 的 `tools/bazel run //common:kernel_aarch64_abi_dist`
+- Our `targets/<id>/staged/Module.symvers` ≈ Android's
+  `gki/aarch64/abi.stg` (simplified).
+- Our `releases/<tag>/analysis/<mod>-vs-<target>-real-missing.txt` ≈
+  Android's ABI diff report.
+- Our `targets.conf` ≈ Android's `symbols/` directory concept (inverted —
+  scope is set by the *target* rather than by the module).
+- Our `make release-branch` ≈ Android's
+  `tools/bazel run //common:kernel_aarch64_abi_dist`.
 
 ---
 
-## 延伸閱讀
+## Further reading
 
 - **GKI overview** — https://source.android.com/docs/core/architecture/kernel/generic-kernel-image
 - **KMI versioning** — https://source.android.com/docs/core/architecture/kernel/kmi-versioning
 - **STG paper / talk** — https://lpc.events/event/16/contributions/1180/
-- **libabigail kmidiff** — `man kmidiff` 或 https://sourceware.org/libabigail/manual/kmidiff.html
+- **libabigail kmidiff** — `man kmidiff` or
+  https://sourceware.org/libabigail/manual/kmidiff.html
 - **Greg KH stable rules** — `Documentation/process/stable-kernel-rules.rst` in any kernel tree
-- **modversions explained** — `Documentation/kbuild/modules.rst` in kernel tree
+- **modversions explained** — `Documentation/kbuild/modules.rst` in any kernel tree
