@@ -21,6 +21,9 @@ target Canonical kernels.
 - **Emits** a self-contained HTML report in `releases/<tag>/report.html`.
 - **Diffs** consecutive releases to surface improvements/regressions.
 
+> **First time using this?** Read [TUTORIAL.md](TUTORIAL.md) — a step-by-step
+> walkthrough for new users / interns.
+
 ## Quick start
 
 ```sh
