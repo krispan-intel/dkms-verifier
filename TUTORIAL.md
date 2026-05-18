@@ -323,6 +323,7 @@ RESULT: FAIL — module will not load on target kernel.
 ## 接下來想學更多？
 
 - 看 `README.md` — 完整 framework 文件
+- 看 `BACKGROUND.md` — 這套工具的方法論從哪來（Greg KH stable kernel + Android GKI）
 - 看 `examples/` — 兩份真實 release 的範例 report
 - 看 `Jenkinsfile` — 整個自動化的 CI pipeline
 - 跑 `make help` — 列出所有可用指令

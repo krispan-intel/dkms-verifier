@@ -23,6 +23,10 @@ target Canonical kernels.
 
 > **First time using this?** Read [TUTORIAL.md](TUTORIAL.md) — a step-by-step
 > walkthrough for new users / interns.
+>
+> **Curious where the methodology came from?** See [BACKGROUND.md](BACKGROUND.md)
+> — how this borrows from Greg KH's stable-kernel rules and Android GKI's
+> ABI tooling.
 
 ## Quick start
 
